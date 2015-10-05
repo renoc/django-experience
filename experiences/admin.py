@@ -14,6 +14,7 @@ class ReviewAdmin(admin.TabularInline):
 class ExperienceAdmin(admin.ModelAdmin):
     model = Experience
     inlines = [RatingAdmin, ReviewAdmin]
+    list_display = ['subject', 'user', 'average_score', 'timestamp']
     raw_id_fields = ['user']
 
 

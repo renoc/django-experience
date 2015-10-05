@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -21,6 +22,22 @@ class Experience(models.Model):
 
     def __unicode__(self):
         return '%s by %s' % (self.subject, self.experiencer)
+
+    class Meta:
+        ordering = ['-timestamp']
+
+    def average_score(self):
+        return self.rating_set.aggregate(models.Avg('score'))['score__avg']
+
+    def get_approved_review(self):
+        # Your schema may require using the all_approved_reviews method
+        try:
+            return self.review_set.get(approved=True)
+        except ObjectDoesNotExist:
+            return None
+
+    def all_approved_reviews(self):
+        return self.review_set.filter(approved=True)
 
 
 class Rating(models.Model):
